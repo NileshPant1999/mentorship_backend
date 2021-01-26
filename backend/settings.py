@@ -28,7 +28,7 @@ SECRET_KEY = "+68*+nqrdv1@qgliqf1$@4@pescybxx+=1_@2=&zp$(ru%hf7n"
 DEBUG = True
 
 ALLOWED_HOSTS = ["http://localhost:3000",
-                 "sparklehood.herokuapp.com","sparklehood-backend.heroku.com", "127.0.0.1"]
+                 "sparklehood.herokuapp.com","sparklehood-backend.herokuapp.com", "127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
