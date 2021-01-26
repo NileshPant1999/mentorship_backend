@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "+68*+nqrdv1@qgliqf1$@4@pescybxx+=1_@2=&zp$(ru%hf7n"
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
@@ -84,15 +85,14 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "d5roooj9oe1qud",
-        'HOST': 'ec2-3-208-168-0.compute-1.amazonaws.com',
+        "ENGINE": config('ENGINE'),
+        "NAME": config('NAME'),
+        'HOST': config('HOST'),
         "PORT": 5432,
-        "USER": "lsaebvwmuqxcis",
-        "PASSWORD": '8c2ea248d2f85df16c6d6e5928b75a2910a9723cac1f27a51d88701f517935a6'
+        "USER": 'lsaebvwmuqxcis',
+        "PASSWORD": config('PASSWORD')
     }
 }
 
