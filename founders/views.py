@@ -35,7 +35,7 @@ class ProgressDetails(generics.RetrieveAPIView):
 
 
 class CreateProgress(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, format="json"):
         serializer = ProgressSerializer(data=request.data)
@@ -47,14 +47,13 @@ class CreateProgress(APIView):
 
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
-
 class EditProgress(generics.UpdateAPIView):
     serializer_class = ProgressSerializer
     queryset = Progress.objects.all()
 
 
 class CreateFounder(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, format=None):
         serializer = FounderSerializer(data=request.data)

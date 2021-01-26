@@ -15,8 +15,11 @@ class Founder(models.Model):
     gender = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     country = models.CharField(max_length=50)
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="founder"
+    user = models.OneToOneField(
+         settings.AUTH_USER_MODEL, 
+         on_delete=models.CASCADE,
+         unique=True, 
+         related_name="founder"
     )
 
     def __str__(self):
@@ -25,7 +28,7 @@ class Founder(models.Model):
 
 class Progress(models.Model):
     numberof_stakeholder = models.IntegerField(null=True, default=0)
-    learning_stakeholder = models.TextField(null=True, default="Hi")
+    learning_stakeholder = models.TextField(null=True)
     mentor_feedback = models.TextField(null=True)
     coach_feedback = models.TextField(null=True)
     goals = ArrayField(models.CharField(max_length=500), null=True)
@@ -34,8 +37,8 @@ class Progress(models.Model):
     unplanned_action_help = models.TextField(null=True)
     primary_metric = models.IntegerField(default=1234)
     lastweek_metric = models.IntegerField(null=True, default=12)
-    target_market = models.CharField(null=True, default="hi", max_length=250)
-    top_priorities = models.TextField(null=True, default="hi")
+    target_market = models.CharField(null=True, max_length=250)
+    top_priorities = models.TextField(null=True,)
     conversation = models.IntegerField(default=45)
     start_date = models.CharField(
         max_length=255,
@@ -50,7 +53,7 @@ class Progress(models.Model):
             + timedelta(days=6)
         ),
     )
-    slug = models.SlugField(max_length=250, null=True, blank=True, default="112321")
+    slug = models.SlugField(max_length=250, null=True, blank=True)
     founder_id = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="Progress"
     )

@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import (
-    CustomUserSerializer, EmailVerificationSerializer, LoginSerializer,
+    CustomUserSerializer, EmailVerificationSerializer, LoginSerializer,ResendEmailSerializer,
     ResetPasswordEmailRequestSerializer, SetNewPasswordSerializer)
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
@@ -57,7 +57,7 @@ class VerifyEmail(APIView):
     serializer_class = EmailVerificationSerializer
 
     def get(self, request):
-        token = request.data['token']
+        token = request.GET.get('token')
         try:
             payload = jwt.decode(token, settings.SECRET_KEY)
             user = User.objects.get(id=payload['user_id'])
@@ -69,12 +69,42 @@ class VerifyEmail(APIView):
 
         except jwt.ExpiredSignatureError as e:
             return Response(
-                {"error": 'Activation Link Expired', "message": e},
+                {"error": 'Activation Link Expired'},
                 status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as e:
             return Response(
-                {"error": 'Invalid Token', "message": e},
+                {"error": 'Invalid Token'},
                 status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class ResendEmail(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self,request,format="json"):
+        serializer = ResendEmailSerializer(data=request.data)
+
+        if serializer.is_valid():
+            json = serializer.data
+            user = User.objects.get(email=json['email'])
+
+            if user.is_active:
+                return Response({"msg":"You account is already activated"}, status=status.HTTP_200_OK)
+            
+            token = RefreshToken.for_user(user).access_token
+
+            current_site = "sparklehood.web.app"
+            relativeLink = "/verifyemail/"
+            absurl = 'https://'+current_site+relativeLink+str(token)
+            email_body = "Hi " + user.user_name + \
+                " Use the Link below to verify your email \n" + absurl
+            data = {'email_body': email_body, 'to_email': user.email,
+                    'email_subject': 'Verify Your Email'}
+            Util.send_email(data)
+
+            return Response(json, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RequestPasswordResetEmail(generics.GenericAPIView):

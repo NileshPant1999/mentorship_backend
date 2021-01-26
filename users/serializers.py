@@ -84,6 +84,13 @@ class EmailVerificationSerializer(serializers.ModelSerializer):
         fields = ['token']
 
 
+class ResendEmailSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=255, min_length=3)
+    class Meta:
+        model = Customers
+        fields = ['email']
+
+
 class ResetPasswordEmailRequestSerializer(serializers.Serializer):
     email = serializers.EmailField(min_length=2)
 
