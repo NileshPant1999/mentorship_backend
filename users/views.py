@@ -122,7 +122,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             token = PasswordResetTokenGenerator().make_token(user)
             # current_site = get_current_site(
             #    request=request).domain
-            relativeLink = "https://sparklehood.web.app/reset-password?token="+token+"&uidb="+uidb64
+            relativeLink = "https://sparklehood.web.app/resetpassword/"+token+"/"+uidb64
 
             absurl = relativeLink
             email_body = 'Hello,' + user.user_name + '\n Use link below to reset your password  \n' + \
