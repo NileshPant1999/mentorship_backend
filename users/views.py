@@ -122,12 +122,11 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             token = PasswordResetTokenGenerator().make_token(user)
             # current_site = get_current_site(
             #    request=request).domain
-            relativeLink = "https://sparklehood.web.app/reset-password/"+token+","+uidb64
+            relativeLink = "https://sparklehood.web.app/reset-password?token="+token+"&uidb="+uidb64
 
-            redirect_url = request.data.get('redirect_url', '')
             absurl = relativeLink
-            email_body = 'Hello, \n Use link below to reset your password  \n' + \
-                absurl+"?redirect_url="+redirect_url
+            email_body = 'Hello,' + user.user_name + '\n Use link below to reset your password  \n' + \
+                absurl
             data = {'email_body': email_body, 'to_email': user.email,
                     'email_subject': 'Reset your passsword'}
             Util.send_email(data)
@@ -139,7 +138,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
 class PasswordTokenCheckAPI(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
 
-    def get(self, request, uidb64, token):
+    def get(self, request,uidb64,token):
 
         redirect_url = request.GET.get('redirect_url')
 
@@ -148,22 +147,15 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
             user = User.objects.get(id=id)
 
             if not PasswordResetTokenGenerator().check_token(user, token):
-                if len(redirect_url) > 3:
-                    return CustomRedirect(redirect_url+'?token_valid=False')
-                else:
-                    return CustomRedirect(os.environ.get('FRONTEND_URL', '')+'?token_valid=False')
+                return Response({'error':'Token valid is false please try again'}, status=status.HTTP_400_BAD_REQUEST)
 
-            if redirect_url and len(redirect_url) > 3:
-                return CustomRedirect(
-                    redirect_url + '?token_valid=True&message=Credentials Valid&uidb64=' + uidb64 +
-                    '&token=' + token)
             else:
-                return CustomRedirect(os.environ.get('FRONTEND_URL', '')+'?token_valid=False')
+                return Response({"msg":'Token validation done','token':token,"uidb64":uidb64})
 
         except DjangoUnicodeDecodeError:
             try:
                 if not PasswordResetTokenGenerator().check_token(user):
-                    return CustomRedirect(redirect_url+'?token_valid=False')
+                    return Response({'error':'Token valid is false please try again'}, status=status.HTTP_400_BAD_REQUEST)
 
             except UnboundLocalError:
                 return Response(
